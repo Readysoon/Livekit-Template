@@ -1,8 +1,9 @@
 from dotenv import load_dotenv
 import logging
-import os
 
 from datetime import date
+
+from db.dbService import GetEntryService
 
 from livekit import agents
 from livekit.agents import (
@@ -27,24 +28,35 @@ logger = logging.getLogger("agent")
 
 load_dotenv()
 
-
 class Assistant(Agent):
     def __init__(self) -> None:
+        # Stelle hier die Persönlichkeit des Agents ein
         super().__init__(
-            instructions="Sag Hallo zu dem Benutzer"
+            instructions="Du bist ein hilfsbereiter deutscher AI Bot"
         )
 
     @function_tool
     async def date_example(self, context: RunContext):
         '''
-        Use this tool to look up the date
+        Verwende diese Tool um das Datum aufzurufen
         '''
 
         logger.info(f"Looking up the date")
 
         return str(date.today())
 
+    @function_tool
+    async def db_example(self, context: RunContext, search_string: str):
+        '''
+        Use this tool to look up something in the database
+        '''
+        logger.info(f"Using the Database")
 
+        result = GetEntryService(search_string)
+
+        # return result
+
+        
 
 
 async def entrypoint(ctx: agents.JobContext):
@@ -69,11 +81,11 @@ async def entrypoint(ctx: agents.JobContext):
 
     await ctx.connect()
 
-
+    # Designe hier den Workflow?
     await session.generate_reply(
         instructions="Begrüße den Nutzer"
     )
-
+    
 
 if __name__ == "__main__":
     agents.cli.run_app(agents.WorkerOptions(entrypoint_fnc=entrypoint))

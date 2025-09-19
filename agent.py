@@ -44,17 +44,31 @@ class Assistant(Agent):
         logger.info(f"Looking up the date")
 
         return str(date.today())
+    
 
+
+    # Tool zur Verwendung (Suche) einer SurrealDB Datenbank
     @function_tool
     async def db_example(self, context: RunContext, search_string: str):
         '''
-        Use this tool to look up something in the database
+        Verwende dieses Tool, um etwas in der Datenbank nachzuschauen
         '''
         logger.info(f"Using the Database")
 
         result = GetEntryService(search_string)
 
-        # return result
+    
+
+    # Beispiel Tool, was zeigt wie man erfolgreich zwei Parameter mit einer Funktion erfassen kann
+    @function_tool
+    async def name_und_geburtstag(self, context: RunContext, name: str, geburtstag: str):
+        '''
+        Verwende dieses Tool, um name und Geburtstag einzutragen
+        '''
+
+        logger.info(f"Trage Name ({name}) und Geburtstag ({geburtstag}) ein")
+
+        return name, geburtstag
 
         
 

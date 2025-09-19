@@ -1,10 +1,11 @@
 from dotenv import load_dotenv
+import os
 
 from livekit import agents
 from livekit.agents import AgentSession, Agent, RoomInputOptions
 from livekit.plugins import (
     openai,
-    cartesia,
+    cartesia, 
     deepgram,
     noise_cancellation,
     silero,
@@ -20,14 +21,14 @@ load_dotenv()
 
 class Assistant(Agent):
     def __init__(self) -> None:
-        super().__init__(instructions="You just say hello to the user.	")
+        super().__init__(instructions="Sag Hallo zu dem Benutzer")
 
 
 async def entrypoint(ctx: agents.JobContext):
     session = AgentSession(
-        stt=deepgram.STT(model="nova-3", language="multi"),
+        stt=deepgram.STT(model="nova-3", language="de"),
         llm=openai.LLM(model="gpt-4o-mini"),
-        tts=cartesia.TTS(model="sonic-2", voice="f786b574-daa5-4673-aa0c-cbe3e8534c02"),
+        tts = cartesia.TTS(voice="b9de4a89-2257-424b-94c2-db18ba68c81a", language="de"),
         vad=silero.VAD.load(),
         turn_detection=MultilingualModel(),
     )
@@ -47,7 +48,7 @@ async def entrypoint(ctx: agents.JobContext):
 
 
     await session.generate_reply(
-        instructions="Greet the user with the date: " + str(date.today())
+        instructions="Begrüße den Nutzer mit dem heutigen Datum " + str(date.today())
     )
 
 

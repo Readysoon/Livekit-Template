@@ -1,8 +1,18 @@
 from dotenv import load_dotenv
+import logging
 import os
 
+from datetime import date
+
 from livekit import agents
-from livekit.agents import AgentSession, Agent, RoomInputOptions
+from livekit.agents import (
+        AgentSession, 
+        Agent, 
+        RoomInputOptions, 
+        function_tool, 
+        RunContext
+    )
+
 from livekit.plugins import (
     openai,
     cartesia, 
@@ -12,8 +22,7 @@ from livekit.plugins import (
 )
 from livekit.plugins.turn_detector.multilingual import MultilingualModel
 
-from datetime import date
-
+logger = logging.getLogger("agent")
 
 
 load_dotenv()
@@ -21,7 +30,21 @@ load_dotenv()
 
 class Assistant(Agent):
     def __init__(self) -> None:
-        super().__init__(instructions="Sag Hallo zu dem Benutzer")
+        super().__init__(
+            instructions="Sag Hallo zu dem Benutzer"
+        )
+
+    @function_tool
+    async def date_example(self, context: RunContext):
+        '''
+        Use this tool to look up the date
+        '''
+
+        logger.info(f"Looking up the date")
+
+        return str(date.today())
+
+
 
 
 async def entrypoint(ctx: agents.JobContext):
@@ -48,7 +71,7 @@ async def entrypoint(ctx: agents.JobContext):
 
 
     await session.generate_reply(
-        instructions="Begrüße den Nutzer mit dem heutigen Datum " + str(date.today())
+        instructions="Begrüße den Nutzer"
     )
 
 

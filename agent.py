@@ -55,7 +55,7 @@ class Assistant(Agent):
         '''
         logger.info(f"Using the Database")
 
-        result = GetEntryService(search_string)
+        return await GetEntryService(search_string=search_string)
 
     
 
@@ -99,6 +99,7 @@ async def entrypoint(ctx: agents.JobContext):
     await session.generate_reply(
         instructions="Begrüße den Nutzer"
     )
+    
     
 
 if __name__ == "__main__":

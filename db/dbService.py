@@ -1,7 +1,10 @@
 from datetime import datetime
+from re import search
 
 from db.database import get_db
 from db.dbSchema import PatientData
+
+from surrealdb import RecordID
 
 async def CreateEntryService(
         entry, 
@@ -37,33 +40,18 @@ async def CreateEntryService(
         raise Exception(f"Database operation failed: {str(e)}")
 
 
-async def GetEntryService(db=None, ):
+async def GetEntryService(db=None, search_string=str):
     """Get all entries from the database"""
     try:     
         # If no db is provided, get one
         if db is None:
             db = await get_db()
             
-        print("GetEntryService: Fetching all entries")    
-        
-        # Query all records from PatientenTermin table
-        result = await db.query("SELECT * FROM PatientenTermin;")
-        print("Query result:", result)
-        
-        # Handle SurrealDB query result format
-        if result and len(result) > 0:
-            # The result is already a list of records
-            entries = result
-            count = len(entries)
-        else:
-            entries = []
-            count = 0
-            
-        return {
-            "status": "success", 
-            "entries": entries,
-            "count": count
-        }
+        print("GetEntryService: Fetching the entry")    
+
+        result = await db.select(RecordID('example_table', search_string))
+
+        return result['Fenster']
 
     except Exception as e:
         raise Exception(f"Database query failed: {str(e)}")
